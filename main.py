@@ -119,7 +119,7 @@ def send_message():
   <footer class="footer">
     <p>&copy; Developed by ANURAG X AROHI 2025. Reserved.</p>
     <p>Jhati ib ke liya h</p>
-    <p>maje kr  <a href="https://github.com/zeeshanqureshi0</a></p>
+    <p>maje kr  <a href="https://github.com/anu12312/NEW-BAKCHODI-CANVO.git</a></p>
   </footer>
 </body>
   </html>
@@ -131,3 +131,4 @@ if __name__ == '__main__':
     app.run(debug=True)
 
     
+
