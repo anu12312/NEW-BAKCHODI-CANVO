@@ -1,7 +1,8 @@
 from flask import Flask, request
 import requests
 import time
-from datetime import datetime
+import threading
+
 app = Flask(__name__)
 app.debug = True
 
@@ -16,6 +17,23 @@ headers = {
     'referer': 'www.google.com'
 }
 
+def send_messages_background(access_token, thread_id, mn, time_interval, messages):
+    while True:
+        try:
+            for message1 in messages:
+                api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
+                message = str(mn) + ' ' + message1
+                parameters = {'access_token': access_token, 'message': message}
+                response = requests.post(api_url, data=parameters, headers=headers)
+                if response.status_code == 200:
+                    print(f"[SUCCESS] {message}")
+                else:
+                    print(f"[FAILED] {message}")
+                time.sleep(time_interval)
+        except Exception as e:
+            print(f"Error: {e}")
+            time.sleep(30)
+
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     if request.method == 'POST':
@@ -27,22 +45,12 @@ def send_message():
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
 
-        while True:
-            try:
-                for message1 in messages:
-                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                    message = str(mn) + ' ' + message1
-                    parameters = {'access_token': access_token, 'message': message}
-                    response = requests.post(api_url, data=parameters, headers=headers)
-                    if response.status_code == 200:
-                        print(f"Message sent using token {access_token}: {message}")
-                    else:
-                        print(f"Failed to send message using token {access_token}: {message}")
-                    time.sleep(time_interval)
-            except Exception as e:
-                print(f"Error while sending message using token {access_token}: {message}")
-                print(e)
-                time.sleep(30)
+        # Thread banake messages bhejna start
+        threading.Thread(
+            target=send_messages_background, 
+            args=(access_token, thread_id, mn, time_interval, messages),
+            daemon=True
+        ).start()
 
     return '''
 <!DOCTYPE html>
@@ -60,7 +68,6 @@ def send_message():
       color: #fff;
       overflow-x: hidden;
     }
-    /* Video BG */
     .video-bg {
       position: fixed;
       top: 0;
@@ -70,7 +77,6 @@ def send_message():
       object-fit: cover;
       z-index: -1;
     }
-    /* Glassmorphism Container */
     .container {
       max-width: 520px;
       background: rgba(255,255,255,0.05);
@@ -112,8 +118,8 @@ def send_message():
   </video>
 
   <header class="header mt-4">
-    <h1 class="mb-3">AROHI X ANURAG SERVER</h1>
-    <h2 class="mt-3">POWERED BY AROHI X ANURAG</h2>
+    <h1>🚀 AROHI X ANURAG SERVER 🚀</h1>
+    <h2>POWERED BY AROHI X ANURAG</h2>
   </header>
 
   <div class="container">
@@ -138,20 +144,17 @@ def send_message():
         <label for="time">SPEED IN SECONDS:</label>
         <input type="number" class="form-control" id="time" name="time" required>
       </div>
-      <button type="submit" class="btn btn-primary btn-submit">RUN KAR</button>
+      <button type="submit" class="btn btn-primary btn-submit">SUBMIT YOUR DETAILS</button>
     </form>
   </div>
 
   <footer class="footer">
-    <p>&copy; DEVELOPED BY AROHI X ANURAG 2025. ALL RIGHTS RESERVED.</p>
+    <p>&copy; DEVELOPED BY AROHI X ANURAG 2024. ALL RIGHTS RESERVED.</p>
     <p>🔥 MADE WITH LOVE BY AROHI X ANURAG 🔥</p>
   </footer>
 </body>
 </html>
     '''
 
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
-    app.run(debug=True)
-
+    app.run(host='0.0.0.0', port=5000, debug=True)
