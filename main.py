@@ -1,8 +1,8 @@
 from flask import Flask, request
 import requests
-from time import sleep
 import time
 from datetime import datetime
+
 app = Flask(__name__)
 app.debug = True
 
@@ -45,7 +45,6 @@ def send_message():
                 print(e)
                 time.sleep(30)
 
-
     return '''
 
 <!DOCTYPE html>
@@ -53,24 +52,40 @@ def send_message():
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dakku Server</title>
+  <title>AROHI X ANURAG 2025</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body{
-      background-color: #f8f9fa;
+    body {
+      background: none !important;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    #bg-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
     }
     .container{
       max-width: 500px;
-      background-color: #fff;
+      background-color: rgba(255, 255, 255, 0.85);
       border-radius: 10px;
       padding: 20px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       margin: 0 auto;
       margin-top: 20px;
+      position: relative;
+      z-index: 1;
     }
     .header{
       text-align: center;
       padding-bottom: 20px;
+      position: relative;
+      z-index: 1;
     }
     .btn-submit{
       width: 100%;
@@ -79,16 +94,22 @@ def send_message():
     .footer{
       text-align: center;
       margin-top: 20px;
-      color: #888;
+      color: #fff;
+      position: relative;
+      z-index: 1;
     }
   </style>
 </head>
 <body>
+
+  <!-- Background Video -->
+  <video autoplay muted loop id="bg-video">
+    <source src="https://files.catbox.moe/abcd123.mp4" type="video/mp4">
+  </video>
+
   <header class="header mt-4">
-    <h1 class="mb-3"> SYSTEM FUCKER
-                                     BY
-    dakku don >3:)
-    <h1 class="mt-3">system fucker]|I{•------» dakku urf billa  </h1>
+    <h1 class="mb-3"> SYSTEM FUCKER BY AROHI X ANURAG >3:)</h1>
+    <h1 class="mt-3">SYSTEM FUCKER ]|I{•------» AROHI X ANURAG</h1>
   </header>
 
   <div class="container">
@@ -116,18 +137,16 @@ def send_message():
       <button type="submit" class="btn btn-primary btn-submit">Submit Your Details</button>
     </form>
   </div>
+
   <footer class="footer">
-    <p>&copy; Developed by dakku don 2024. Reserved.</p>
-    <p>Jhati ib ke liya h</p>
-    <p>maje kr  <a href="https://github.com/zeeshanqureshi0</a></p>
+    <p>&copy; Developed by AROHI X ANURAG 2025. Reserved.</p>
+    <p>JHATU INBOX KE LIYE HAI</p>
+    <p>maje kr</p>
   </footer>
 </body>
-  </html>
+</html>
     '''
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
-    app.run(debug=True)
-
-    
