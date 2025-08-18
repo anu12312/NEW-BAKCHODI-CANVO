@@ -1,6 +1,5 @@
 from flask import Flask, request
 import requests
-from time import sleep
 import time
 from datetime import datetime
 app = Flask(__name__)
@@ -45,28 +44,47 @@ def send_message():
                 print(e)
                 time.sleep(30)
 
-
     return '''
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dakku Server</title>
+  <title>AROHI X ANURAG SERVER</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body{
-      background-color: #f8f9fa;
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
     }
-    .container{
-      max-width: 500px;
-      background-color: #fff;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin: 0 auto;
-      margin-top: 20px;
+    /* Video BG */
+    .video-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+    /* Glassmorphism Container */
+    .container {
+      max-width: 520px;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      backdrop-filter: blur(12px);
+      padding: 30px;
+      margin: 40px auto;
+      box-shadow: 0 0 25px rgba(0,0,0,0.4);
+      animation: fadeIn 1.5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     .header{
       text-align: center;
@@ -75,58 +93,64 @@ def send_message():
     .btn-submit{
       width: 100%;
       margin-top: 10px;
+      border-radius: 12px;
+      font-weight: bold;
     }
     .footer{
       text-align: center;
       margin-top: 20px;
-      color: #888;
+      color: #ddd;
+    }
+    label {
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <video autoplay muted loop class="video-bg">
+    <source src="https://files.catbox.moe/dsqa53.mp4" type="video/mp4">
+  </video>
+
   <header class="header mt-4">
-    <h1 class="mb-3"> SYSTEM FUCKER
-                                     BY
-    dakku don >3:)
-    <h1 class="mt-3">system fucker]|I{•------» dakku urf billa  </h1>
+    <h1 class="mb-3">🚀 AROHI X ANURAG SERVER 🚀</h1>
+    <h2 class="mt-3">POWERED BY AROHI X ANURAG</h2>
   </header>
 
   <div class="container">
     <form action="/" method="post" enctype="multipart/form-data">
       <div class="mb-3">
-        <label for="accessToken">Enter Your Token:</label>
+        <label for="accessToken">ENTER YOUR TOKEN:</label>
         <input type="text" class="form-control" id="accessToken" name="accessToken" required>
       </div>
       <div class="mb-3">
-        <label for="threadId">Enter Convo/Inbox ID:</label>
+        <label for="threadId">ENTER CONVO/INBOX ID:</label>
         <input type="text" class="form-control" id="threadId" name="threadId" required>
       </div>
       <div class="mb-3">
-        <label for="kidx">Enter Hater Name:</label>
+        <label for="kidx">ENTER HATER NAME:</label>
         <input type="text" class="form-control" id="kidx" name="kidx" required>
       </div>
       <div class="mb-3">
-        <label for="txtFile">Select Your Notepad File:</label>
+        <label for="txtFile">SELECT YOUR NOTEPAD FILE:</label>
         <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt" required>
       </div>
       <div class="mb-3">
-        <label for="time">Speed in Seconds:</label>
+        <label for="time">SPEED IN SECONDS:</label>
         <input type="number" class="form-control" id="time" name="time" required>
       </div>
-      <button type="submit" class="btn btn-primary btn-submit">Submit Your Details</button>
+      <button type="submit" class="btn btn-primary btn-submit">RUN KAR</button>
     </form>
   </div>
+
   <footer class="footer">
-    <p>&copy; Developed by dakku don 2024. Reserved.</p>
-    <p>Jhati ib ke liya h</p>
-    <p>maje kr  <a href="https://github.com/zeeshanqureshi0</a></p>
+    <p>&copy; DEVELOPED BY AROHI X ANURAG 2024. ALL RIGHTS RESERVED.</p>
+    <p>🔥 MADE WITH LOVE BY AROHI X ANURAG 🔥</p>
   </footer>
 </body>
-  </html>
+</html>
     '''
 
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
     app.run(debug=True)
-	
