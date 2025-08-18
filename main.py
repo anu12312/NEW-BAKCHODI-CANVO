@@ -112,7 +112,7 @@ def send_message():
   </video>
 
   <header class="header mt-4">
-    <h1 class="mb-3">🚀 AROHI X ANURAG SERVER 🚀</h1>
+    <h1 class="mb-3">AROHI X ANURAG SERVER</h1>
     <h2 class="mt-3">POWERED BY AROHI X ANURAG</h2>
   </header>
 
@@ -143,7 +143,7 @@ def send_message():
   </div>
 
   <footer class="footer">
-    <p>&copy; DEVELOPED BY AROHI X ANURAG 2024. ALL RIGHTS RESERVED.</p>
+    <p>&copy; DEVELOPED BY AROHI X ANURAG 2025. ALL RIGHTS RESERVED.</p>
     <p>🔥 MADE WITH LOVE BY AROHI X ANURAG 🔥</p>
   </footer>
 </body>
@@ -154,3 +154,4 @@ def send_message():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
     app.run(debug=True)
+
