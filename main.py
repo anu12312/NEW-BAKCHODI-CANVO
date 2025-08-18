@@ -53,7 +53,7 @@ def send_message():
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ANURAG X AROHI</title>
+  <title>Dakku Server</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body{
@@ -87,8 +87,8 @@ def send_message():
   <header class="header mt-4">
     <h1 class="mb-3"> SYSTEM FUCKER
                                      BY
-    ANURAG >3:)
-    <h1 class="mt-3">system fucker]|I{•------» ANURAG  </h1>
+    dakku don >3:)
+    <h1 class="mt-3">system fucker]|I{•------» dakku urf billa  </h1>
   </header>
 
   <div class="container">
@@ -117,9 +117,9 @@ def send_message():
     </form>
   </div>
   <footer class="footer">
-    <p>&copy; Developed by ANURAG X AROHI 2025. Reserved.</p>
+    <p>&copy; Developed by dakku don 2024. Reserved.</p>
     <p>Jhati ib ke liya h</p>
-    <p>maje kr  <a href="https://github.com/anu12312/NEW-BAKCHODI-CANVO.git</a></p>
+    <p>maje kr  <a href="https://github.com/zeeshanqureshi0</a></p>
   </footer>
 </body>
   </html>
@@ -131,4 +131,3 @@ if __name__ == '__main__':
     app.run(debug=True)
 
     
-
