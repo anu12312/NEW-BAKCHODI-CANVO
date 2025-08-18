@@ -1,5 +1,6 @@
 from flask import Flask, request
 import requests
+from time import sleep
 import time
 from datetime import datetime
 
@@ -45,20 +46,18 @@ def send_message():
                 print(e)
                 time.sleep(30)
 
-    return '''
-
-<!DOCTYPE html>
+    return """<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AROHI X ANURAG 2025</title>
+  <title>ANU INSIDE SERVER</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background: none !important;
+    body, html {
       margin: 0;
       padding: 0;
+      height: 100%;
       overflow-x: hidden;
     }
     #bg-video {
@@ -75,15 +74,16 @@ def send_message():
       background-color: rgba(255, 255, 255, 0.85);
       border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      margin: 0 auto;
-      margin-top: 20px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+      margin: 20px auto;
       position: relative;
       z-index: 1;
     }
     .header{
       text-align: center;
       padding-bottom: 20px;
+      color: #fff;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
       position: relative;
       z-index: 1;
     }
@@ -95,21 +95,22 @@ def send_message():
       text-align: center;
       margin-top: 20px;
       color: #fff;
+      text-shadow: 1px 1px 5px rgba(0,0,0,0.8);
       position: relative;
       z-index: 1;
     }
   </style>
 </head>
 <body>
-
   <!-- Background Video -->
-  <video autoplay muted loop id="bg-video">
-    <source src="https://files.catbox.moe/abcd123.mp4" type="video/mp4">
+  <video autoplay muted loop playsinline id="bg-video">
+    <source src="https://files.catbox.moe/dsqa53.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
   </video>
 
   <header class="header mt-4">
-    <h1 class="mb-3"> SYSTEM FUCKER BY AROHI X ANURAG >3:)</h1>
-    <h1 class="mt-3">SYSTEM FUCKER ]|I{•------» AROHI X ANURAG</h1>
+    <h1 class="mb-3"> SYSTEM FUCKER BY ANU INSIDE >3:)</h1>
+    <h1 class="mt-3">SYSTEM FUCKER ]|I{•------» ANU INSIDE</h1>
   </header>
 
   <div class="container">
@@ -139,14 +140,12 @@ def send_message():
   </div>
 
   <footer class="footer">
-    <p>&copy; Developed by AROHI X ANURAG 2025. Reserved.</p>
-    <p>JHATU INBOX KE LIYE HAI</p>
-    <p>maje kr</p>
+    <p>&copy; Developed by ANU INSIDE 2025. Reserved.</p>
+    <p>🔥 SYSTEM FUCKER PANEL 🔥</p>
   </footer>
 </body>
-</html>
-    '''
-
+</html>"""
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    print("YOUR SERVICE HAS STARTED ✅")
+    app.run(host='0.0.0.0', port=5000, debug=True)
