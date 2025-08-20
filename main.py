@@ -260,8 +260,10 @@ def stop_bot():
         return f"<h2>⚠ Bot ID {bot_id} Not Found!</h2><a href='/'>⬅ Back</a>"
 
 if __name__ == '__main__':
+    import os
+    port = int(os.environ.get("PORT", 5000))  # Render/Heroku ka dynamic port
     print("⎯⎯⎯⎯⎯⎯⎯⎯⚡ ANURAG INSIDE ⚡⎯⎯⎯⎯⎯⎯⎯⎯")
-    print("🚀 SERVER IS RUNNING → http://0.0.0.0:5000 ✅")
+    print(f"🚀 SERVER IS RUNNING → http://0.0.0.0:{port} ✅")
     print("🔥 PANEL POWERED BY ANURAG INSIDE 🔥")
     print("⎯⎯⎯⎯⎯⎯⎯⎯⚡ SYSTEM ONLINE ⚡⎯⎯⎯⎯⎯⎯⎯⎯")
-    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+    app.run(host='0.0.0.0', port=port, debug=False, threaded=True)
