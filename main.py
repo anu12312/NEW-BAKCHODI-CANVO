@@ -226,4 +226,5 @@ if __name__ == '__main__':
     print("🚀 SERVER IS RUNNING → http://0.0.0.0:5000 ✅")
     print("🔥 PANEL POWERED BY ANURAG INSIDE 🔥")
     print("⎯⎯⎯⎯⎯⎯⎯⎯⚡ SYSTEM ONLINE ⚡⎯⎯⎯⎯⎯⎯⎯⎯")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+
